@@ -134,6 +134,145 @@
 			"type": "shell",
 			"command": "git add -f README.md .gitignore && git commit -m \"📚 Enhanced README.md with comprehensive documentation and updated .gitignore\n\n✨ README.md enhancements:\n- Added professional badges for all technologies\n- Created detailed feature comparison table\n- Enhanced quick start with multiple options\n- Added comprehensive project structure overview\n- Detailed VS Code integration documentation\n- Performance benchmarking guidelines\n- Troubleshooting section with common issues\n- Customization and contribution guidelines\n- Learning resources and acknowledgments\n- Professional formatting and organization\n\n🔧 Updated .gitignore to allow committing documentation files\"",
 			"group": "build"
+		},
+		{
+			"label": "🐳 Check Container Tools",
+			"type": "shell",
+			"command": "echo '=== Container Tools Status ===' && echo 'Docker:' && docker --version && echo 'Podman:' && podman --version && echo 'kubectl:' && kubectl version --client --short && echo 'Node.js:' && node --version && echo 'npm:' && npm --version",
+			"group": "test",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "new"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "🔍 Show All Containers",
+			"type": "shell",
+			"command": "echo '=== Docker Containers ===' && docker ps -a && echo '' && echo '=== Podman Containers ===' && podman ps -a",
+			"group": "test",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "new"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "🖼️ Show All Images",
+			"type": "shell",
+			"command": "echo '=== Docker Images ===' && docker images && echo '' && echo '=== Podman Images ===' && podman images",
+			"group": "test",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "new"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "⚡ Benchmark All Builds",
+			"type": "shell",
+			"command": "echo '🚀 Starting build benchmark...' && echo '' && echo '⏱️ Docker Classic:' && time ./scripts/build_docker.sh && echo '' && echo '⏱️ Docker BuildKit:' && time ./scripts/build_buildkit.sh && echo '' && echo '⏱️ Podman:' && time ./scripts/build_podman.sh && echo '' && echo '⏱️ Kaniko:' && time ./scripts/build_kaniko_local.sh && echo '' && echo '✅ Benchmark complete!'",
+			"group": "test",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "new"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "🧹 Deep Clean All",
+			"type": "shell",
+			"command": "echo '🧹 Deep cleaning Docker...' && docker system prune -af && echo '🧹 Deep cleaning Podman...' && podman system prune -af && echo '🧹 Cleaning npm cache...' && npm cache clean --force && echo '✅ Deep clean complete!'",
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "new"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "🔧 Setup Dev Environment",
+			"type": "shell",
+			"command": "bash .devcontainer/post-create.sh",
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "new"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "🧪 Test Development Setup",
+			"type": "shell",
+			"command": "chmod +x test-setup.sh && ./test-setup.sh",
+			"group": "test",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "new"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Test Setup Manual",
+			"type": "shell",
+			"command": "bash test-setup.sh",
+			"group": "test"
+		},
+		{
+			"label": "Fix Script Permissions",
+			"type": "shell",
+			"command": "chmod +x scripts/*.sh && chmod +x test-setup.sh && chmod +x .devcontainer/post-create.sh",
+			"group": "build"
+		},
+		{
+			"label": "Check Script Permissions",
+			"type": "shell",
+			"command": "ls -la scripts/",
+			"group": "test"
+		},
+		{
+			"label": "Test Docker Build",
+			"type": "shell",
+			"command": "bash scripts/build_docker.sh",
+			"group": "test"
+		},
+		{
+			"label": "Install App Dependencies",
+			"type": "shell",
+			"command": "cd app && npm install",
+			"group": "build"
+		},
+		{
+			"label": "Install Root Dependencies",
+			"type": "shell",
+			"command": "npm install",
+			"group": "build"
+		},
+		{
+			"label": "Test Docker Build Again",
+			"type": "shell",
+			"command": "bash scripts/build_docker.sh",
+			"group": "test"
+		},
+		{
+			"label": "Test Podman Build",
+			"type": "shell",
+			"command": "bash scripts/build_podman.sh",
+			"group": "test"
 		}
 	]
 }
