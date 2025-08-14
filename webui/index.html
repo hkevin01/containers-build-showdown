@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Container Build Showdown</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      color: white;
+    }
+    
+    h1 { font-size: 2.5rem; margin-bottom: 10px; }
+    .subtitle { font-size: 1.1rem; opacity: 0.9; }
+    
+    .info-panel {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .tool-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .tool-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .tool-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .tool-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      margin-right: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: white;
+    }
+    
+    .docker { background: #2496ED; }
+    .buildkit { background: #0066CC; }
+    .podman { background: #892CA0; }
+    .kaniko { background: #326CE5; }
+    
+    .tool-title { font-size: 1.3rem; font-weight: 600; }
+    .tool-desc { color: #666; margin-bottom: 20px; line-height: 1.5; }
+    
+    .btn {
+      width: 100%;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 10px;
+    }
+    
+    .btn-build {
+      background: #28a745;
+      color: white;
+    }
+    
+    .btn-build:hover { background: #218838; }
+    .btn-build:disabled { background: #6c757d; cursor: not-allowed; }
+    
+    .actions {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    
+    .btn-run { background: #007bff; color: white; }
+    .btn-clean { background: #dc3545; color: white; }
+    .btn-run:hover { background: #0056b3; }
+    .btn-clean:hover { background: #c82333; }
+    
+    .output {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    
+    .output-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #e9ecef;
+    }
+    
+    .output-content {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 16px;
+      border-radius: 8px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    
+    .clear-btn {
+      background: #6c757d;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 2px solid #333;
+      animation: spin 1s linear infinite;
+      margin-left: 8px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .status-indicator {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    
+    .status-ok { background: #28a745; }
+    .status-error { background: #dc3545; }
+    .status-unknown { background: #6c757d; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🐳 Container Build Showdown</h1>
+      <p class="subtitle">Compare Docker, BuildKit, Podman, and Kaniko build performance</p>
+    </header>
+
+    <div class="info-panel">
+      <h3>System Information</h3>
+      <div id="system-info">Loading system information...</div>
+    </div>
+
+    <div class="tools-grid">
+      <div class="tool-card">
+        <div class="tool-header">
+          <div class="tool-icon docker">🐳</div>
+          <div class="tool-title">Docker Classic</div>
+        </div>
+        <p class="tool-desc">Traditional Docker build using the legacy builder with standard layer caching.</p>
+        <button class="btn btn-build" onclick="buildWithTool('docker')">Build with Docker</button>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-header">
+          <div class="tool-icon buildkit">⚡</div>
+          <div class="tool-title">BuildKit/Buildx</div>
+        </div>
+        <p class="tool-desc">Next-generation Docker build with advanced features like cache mounts and secrets.</p>
+        <button class="btn btn-build" onclick="buildWithTool('buildkit')">Build with BuildKit</button>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-header">
+          <div class="tool-icon podman">🔧</div>
+          <div class="tool-title">Podman</div>
+        </div>
+        <p class="tool-desc">Daemonless container engine with rootless capabilities and Docker compatibility.</p>
+        <button class="btn btn-build" onclick="buildWithTool('podman')">Build with Podman</button>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-header">
+          <div class="tool-icon kaniko">☸️</div>
+          <div class="tool-title">Kaniko</div>
+        </div>
+        <p class="tool-desc">Kubernetes-native container builds without requiring Docker daemon privileges.</p>
+        <button class="btn btn-build" onclick="buildWithTool('kaniko')">Build with Kaniko</button>
+      </div>
+    </div>
+
+    <div class="actions">
+      <h3 style="margin-bottom: 16px;">Actions</h3>
+      <div class="actions-grid">
+        <button class="btn btn-run" onclick="runContainer()">🚀 Run Latest Image</button>
+        <button class="btn btn-clean" onclick="cleanUp()">🧹 Clean Up Images</button>
+      </div>
+    </div>
+
+    <div class="output">
+      <div class="output-header">
+        <h3>Output</h3>
+        <button class="clear-btn" onclick="clearOutput()">Clear</button>
+      </div>
+      <div id="output-content" class="output-content">Ready to build containers! 🚀</div>
+    </div>
+  </div>
+
+  <script>
+    let isShellEnabled = false;
+
+    async function loadSystemInfo() {
+      try {
+        const response = await fetch('/api/info');
+        const data = await response.json();
+        isShellEnabled = data.ENABLE_SHELL;
+        
+        let html = `<p><strong>Shell Execution:</strong> <span class="status-indicator ${isShellEnabled ? 'status-ok' : 'status-error'}"></span>${isShellEnabled ? 'Enabled' : 'Disabled'}</p>`;
+        
+        if (!isShellEnabled) {
+          html += '<p><em>Set ENABLE_SHELL=1 environment variable to enable build execution</em></p>';
+        }
+        
+        html += '<h4 style="margin-top: 16px;">Tool Versions:</h4><ul>';
+        for (const [tool, version] of Object.entries(data.versions)) {
+          const status = version.includes('not found') ? 'status-error' : 'status-ok';
+          html += `<li><span class="status-indicator ${status}"></span><strong>${tool}:</strong> ${version}</li>`;
+        }
+        html += '</ul>';
+        
+        document.getElementById('system-info').innerHTML = html;
+      } catch (error) {
+        document.getElementById('system-info').innerHTML = '<p style="color: red;">Failed to load system information</p>';
+      }
+    }
+
+    function addOutput(text, type = 'info') {
+      const output = document.getElementById('output-content');
+      const timestamp = new Date().toLocaleTimeString();
+      const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+      output.textContent += `[${timestamp}] ${prefix} ${text}\n`;
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function clearOutput() {
+      document.getElementById('output-content').textContent = 'Output cleared.\n';
+    }
+
+    function setButtonLoading(selector, loading) {
+      const btn = document.querySelector(selector);
+      if (loading) {
+        btn.disabled = true;
+        btn.innerHTML += '<span class="loading"></span>';
+      } else {
+        btn.disabled = false;
+        const loading = btn.querySelector('.loading');
+        if (loading) loading.remove();
+      }
+    }
+
+    async function buildWithTool(tool) {
+      const buttonSelector = `.tool-card .btn-build[onclick="buildWithTool('${tool}')"]`;
+      setButtonLoading(buttonSelector, true);
+      
+      addOutput(`Starting build with ${tool}...`);
+      
+      try {
+        const response = await fetch('/api/build', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tool })
+        });
+        
+        const data = await response.json();
+        
+        if (data.note) {
+          addOutput(data.note);
+          addOutput(`Would execute: ${data.command}`);
+        } else if (data.code === 0) {
+          addOutput(`✅ Build with ${tool} completed successfully!`, 'success');
+          addOutput(data.out);
+        } else {
+          addOutput(`❌ Build with ${tool} failed (exit code: ${data.code})`, 'error');
+          addOutput(data.out);
+        }
+      } catch (error) {
+        addOutput(`❌ Error building with ${tool}: ${error.message}`, 'error');
+      } finally {
+        setButtonLoading(buttonSelector, false);
+      }
+    }
+
+    async function runContainer() {
+      const btn = document.querySelector('.btn-run');
+      setButtonLoading('.btn-run', true);
+      
+      addOutput('Starting container...');
+      
+      try {
+        const response = await fetch('/api/run', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({})
+        });
+        
+        const data = await response.json();
+        
+        if (data.note) {
+          addOutput(data.note);
+          addOutput(`Would run: ${data.image}`);
+        } else if (data.code === 0) {
+          addOutput(`✅ Container ${data.image} started successfully!`, 'success');
+          addOutput(data.out);
+        } else {
+          addOutput(`❌ Failed to run container (exit code: ${data.code})`, 'error');
+          addOutput(data.out);
+        }
+      } catch (error) {
+        addOutput(`❌ Error running container: ${error.message}`, 'error');
+      } finally {
+        setButtonLoading('.btn-run', false);
+      }
+    }
+
+    async function cleanUp() {
+      setButtonLoading('.btn-clean', true);
+      
+      addOutput('Cleaning up images and containers...');
+      
+      try {
+        const response = await fetch('/api/clean', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({})
+        });
+        
+        const data = await response.json();
+        
+        if (data.note) {
+          addOutput(data.note);
+        } else if (data.code === 0) {
+          addOutput('✅ Cleanup completed successfully!', 'success');
+          addOutput(data.out);
+        } else {
+          addOutput(`❌ Cleanup failed (exit code: ${data.code})`, 'error');
+          addOutput(data.out);
+        }
+      } catch (error) {
+        addOutput(`❌ Error during cleanup: ${error.message}`, 'error');
+      } finally {
+        setButtonLoading('.btn-clean', false);
+      }
+    }
+
+    // Load system info on page load
+    loadSystemInfo();
+  </script>
+</body>
+</html>
