@@ -14,12 +14,12 @@ A comprehensive VS Code–optimized demo project that compares and benchmarks fo
 
 This project provides a hands-on comparison of four popular container build tools:
 
-| Tool | Type | Key Features | Best For |
+| <sub>Tool</sub> | <sub>Type</sub> | <sub>Key Features</sub> | <sub>Best For</sub> |
 |------|------|--------------|----------|
-| **🐳 Docker Classic** | Traditional | Stable, widely supported | Production environments |
-| **⚡ BuildKit/Buildx** | Next-gen Docker | Advanced caching, secrets, multi-platform | Modern Docker workflows |
-| **🔧 Podman** | Daemonless | Rootless, Docker-compatible, security-focused | Kubernetes, rootless containers |
-| **☸️ Kaniko** | Kubernetes-native | No daemon required, secure builds in containers | CI/CD pipelines, Kubernetes |
+| <sub>**🐳 Docker Classic**</sub> | <sub>Traditional</sub> | <sub>Stable, widely supported</sub> | <sub>Production environments</sub> |
+| <sub>**⚡ BuildKit/Buildx**</sub> | <sub>Next-gen Docker</sub> | <sub>Advanced caching, secrets, multi-platform</sub> | <sub>Modern Docker workflows</sub> |
+| <sub>**🔧 Podman**</sub> | <sub>Daemonless</sub> | <sub>Rootless, Docker-compatible, security-focused</sub> | <sub>Kubernetes, rootless containers</sub> |
+| <sub>**☸️ Kaniko**</sub> | <sub>Kubernetes-native</sub> | <sub>No daemon required, secure builds in containers</sub> | <sub>CI/CD pipelines, Kubernetes</sub> |
 
 ## 🚀 Features
 
@@ -268,12 +268,12 @@ npm run benchmark  # (if implemented)
 
 ### Expected Performance Characteristics
 
-| Tool | First Build | Subsequent Builds | Cache Efficiency | Parallel Stages |
+| <sub>Tool</sub> | <sub>First Build</sub> | <sub>Subsequent Builds</sub> | <sub>Cache Efficiency</sub> | <sub>Parallel Stages</sub> |
 |------|-------------|-------------------|------------------|-----------------|
-| Docker Classic | Baseline | Good | Standard | Limited |
-| BuildKit | +10-20% | Excellent | Advanced | Full |
-| Podman | Similar | Good | Standard | Limited |  
-| Kaniko | +20-30% | Good | Registry-based | Moderate |
+| <sub>Docker Classic</sub> | <sub>Baseline</sub> | <sub>Good</sub> | <sub>Standard</sub> | <sub>Limited</sub> |
+| <sub>BuildKit</sub> | <sub>+10-20%</sub> | <sub>Excellent</sub> | <sub>Advanced</sub> | <sub>Full</sub> |
+| <sub>Podman</sub> | <sub>Similar</sub> | <sub>Good</sub> | <sub>Standard</sub> | <sub>Limited</sub> |
+| <sub>Kaniko</sub> | <sub>+20-30%</sub> | <sub>Good</sub> | <sub>Registry-based</sub> | <sub>Moderate</sub> |
 
 *Times vary based on system configuration and network conditions*
 
